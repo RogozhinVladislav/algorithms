@@ -1,5 +1,5 @@
 /*
-Успешная попытка: https://contest.yandex.ru/contest/22781/run-report/88166951/
+Успешная попытка: https://contest.yandex.ru/contest/22781/run-report/88223760/
 
 ---Принцип работы---
 Алгоритм работает следующим образом: он проходит по каждому символу в выражении. Если символ - число, он помещается в стек. Если символ - оператор, то из стека извлекаются два последних числа, на них применяется оператор, а результат возвращается в стек
@@ -11,7 +11,7 @@
 Временная сложность этого алгоритма равна O(n), где n - это количество символов в префиксном выражении. Это связано с тем, что каждый символ в выражении обрабатывается ровно один раз
 
 ---Пространственная сложность---
-Пространственная сложность этого алгоритма будет примерно O(n/2), где n - это количество символов в выражении, так как в стtке хранятся только операнды и их будте примерно половина
+Пространственная сложность этого алгоритма будет примерно O(n/2), где n - это количество символов в выражении, так как в строке хранятся только операнды и их будет примерно половина
 Отбрасываем константу и получаем O(n)
 */
 
@@ -30,8 +30,20 @@ reader.on('line', line => {
 
 process.stdin.on('end', solve)
 
+function readArray() {
+    const arr = inputLines[curLine].trim().split(' ')
+    return arr
+}
+
 function solve() {
     const notation = readArray()
+
+    const result = executeNotation(notation)
+
+    process.stdout.write(`${result}`)
+}
+
+function executeNotation(notation) {
     const stack = []
 
     const getLastTwoNumbers = () => {
@@ -55,10 +67,5 @@ function solve() {
         }
     }
 
-    process.stdout.write(`${stack[stack.length - 1]}`)
-}
-
-function readArray() {
-    const arr = inputLines[curLine].trim().split(' ')
-    return arr
+    return stack.pop()
 }

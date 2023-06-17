@@ -1,5 +1,5 @@
 /*
-Успешная попытка: https://contest.yandex.ru/contest/22781/run-report/88150307/
+Успешная попытка: https://contest.yandex.ru/contest/22781/run-report/88223997/
 
 -- ПРИНЦИП РАБОТЫ --
 Реализована двусторонняя очередь (дек) на кольцевом буфере
@@ -11,6 +11,7 @@
 В реализации присутствуют проверки на переполнение дека при добавлении элементов и на пустоту дека при удалении элементов
 
 -- ВРЕМЕННАЯ СЛОЖНОСТЬ --
+Общая сложность алгоритма O(m), где m - количество команд, которое подаётся на вход
 Все операции дека (добавление и удаление элементов с обоих концов) выполняются за O(1), так как они сводятся к обновлению значений элементов массива по индексам
 
 -- ПРОСТРАНСТВЕННАЯ СЛОЖНОСТЬ --
@@ -36,8 +37,7 @@ class Deque {
 
     pushBack(item) {
         if (this.isFull()) {
-            process.stdout.write('error\n')
-            return
+            return { error: 'The deque is full' }
         }
 
         if (this.isEmpty()) {
@@ -52,14 +52,13 @@ class Deque {
 
     pushFront(item) {
         if (this.isFull()) {
-            process.stdout.write('error\n')
-            return
+            return { error: 'The deque is full' }
         }
 
         if (this.isEmpty()) {
             this.tail = this.head
         } else {
-            this.head = this.head === 0 ? this.maxSize - 1 : this.head - 1
+            this.head = (this.head - 1 + this.maxSize) % this.maxSize
         }
 
         this.deque[this.head] = item
@@ -68,28 +67,26 @@ class Deque {
 
     popBack() {
         if (this.isEmpty()) {
-            process.stdout.write('error\n')
-            return
+            return { error: 'The deque is empty' }
         }
 
         const item = this.deque[this.tail]
-        this.tail = this.tail === 0 ? this.tail = this.maxSize - 1 : this.tail - 1
+        this.tail = (this.tail - 1 + this.maxSize) % this.maxSize
         this.size -= 1
 
-        process.stdout.write(`${item}\n`)
+        return { item }
     }
 
     popFront() {
         if (this.isEmpty()) {
-            process.stdout.write('error\n')
-            return
+            return { error: 'The deque is empty' }
         }
 
         const item = this.deque[this.head]
         this.head = (this.head + 1) % this.maxSize
         this.size -= 1
 
-        process.stdout.write(`${item}\n`)
+        return { item }
     }
 }
 
@@ -119,25 +116,34 @@ function solve() {
     while (curLine <= commandsCount + 1) {
         const line = inputLines[curLine].trim().split(' ')
         const command = line[0]
+        let result
 
         switch (command) {
             case 'push_back': {
-                const value = parseInt(line[1])
-                deque.pushBack(value)
+                const value = parseInt(line[1], 10)
+                result = deque.pushBack(value)
                 break
             }
             case 'push_front': {
-                const value = parseInt(line[1])
-                deque.pushFront(value)
+                const value = parseInt(line[1], 10)
+                result = deque.pushFront(value)
                 break
             }
             case 'pop_back': {
-                deque.popBack()
+                result = deque.popBack()
                 break
             }
             case 'pop_front': {
-                deque.popFront()
+                result = deque.popFront()
                 break
+            }
+        }
+
+        if (result) {
+            if (result.error) {
+                process.stdout.write(`error\n`)
+            } else if (result.item !== undefined) {
+                process.stdout.write(`${result.item}\n`)
             }
         }
 
